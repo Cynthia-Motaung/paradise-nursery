@@ -65,23 +65,15 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // In AuthContext.js, update the logout function:
-const handleLogout = () => {
-  // Clear local storage
-  if (user) {
-    localStorage.removeItem(`user_profile_${user.sub}`);
-    localStorage.removeItem(`user_prefs_${user.sub}`);
-  }
-  localStorage.removeItem('paradise_nursery_cart');
+  const handleLogout = () => {
+  localStorage.clear();
   
-  // Use the exact homepage URL instead of just origin
-  const returnToUrl = `${window.location.origin}/`;
-  
-  console.log('Logging out to:', returnToUrl); // For debugging
+  // REPLACE THIS WITH YOUR ACTUAL VERCEL URL
+  const vercelUrl = 'https://paradise-nursery-six-topaz.vercel.app/';
   
   logout({
     logoutParams: {
-      returnTo: returnToUrl
+      returnTo: vercelUrl
     }
   });
 };
