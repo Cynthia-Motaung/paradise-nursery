@@ -65,6 +65,27 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // In AuthContext.js, update the logout function:
+const handleLogout = () => {
+  // Clear local storage
+  if (user) {
+    localStorage.removeItem(`user_profile_${user.sub}`);
+    localStorage.removeItem(`user_prefs_${user.sub}`);
+  }
+  localStorage.removeItem('paradise_nursery_cart');
+  
+  // Use the exact homepage URL instead of just origin
+  const returnToUrl = `${window.location.origin}/`;
+  
+  console.log('Logging out to:', returnToUrl); // For debugging
+  
+  logout({
+    logoutParams: {
+      returnTo: returnToUrl
+    }
+  });
+};
+
   const value = {
     user,
     userProfile,
