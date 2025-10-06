@@ -1,8 +1,15 @@
-import React, { useState } from 'react';
-import Header from './components/Header';
-import Landing from './pages/Landing';
-import Products from './pages/Products';
-import Cart from './pages/Cart';
+import React, { useState, Suspense, lazy } from 'react';
+import { CartProvider } from './context/CartContext';
+import ErrorBoundary from './components/common/ErrorBoundary/ErrorBoundary';
+import LoadingSpinner from './components/common/LoadingSpinner/LoadingSpinner';
+import Header from './components/common/Header/Header';
+import Footer from './components/common/Footer/Footer';
+import './styles/globals.css';
+
+// Lazy load pages for better performance
+const Landing = lazy(() => import('./pages/Landing/Landing'));
+const Products = lazy(() => import('./pages/Products/Products'));
+const Cart = lazy(() => import('./pages/Cart/Cart'));
 
 function App() {
   const [currentPage, setCurrentPage] = useState('landing');
@@ -21,12 +28,19 @@ function App() {
   };
 
   return (
-    <div className="App">
-      <Header currentPage={currentPage} onNavigate={setCurrentPage} />
-      <main>
-        {renderPage()}
-      </main>
-    </div>
+    <ErrorBoundary>
+      <CartProvider>
+        <div className="App">
+          <Header currentPage={currentPage} onNavigate={setCurrentPage} />
+          <main>
+            <Suspense fallback={<LoadingSpinner />}>
+              {renderPage()}
+            </Suspense>
+          </main>
+          <Footer />
+        </div>
+      </CartProvider>
+    </ErrorBoundary>
   );
 }
 

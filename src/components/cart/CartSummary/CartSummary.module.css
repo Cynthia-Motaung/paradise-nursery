@@ -1,0 +1,116 @@
+.summary {
+  background: var(--background-primary);
+  padding: var(--spacing-xl);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-light);
+  position: sticky;
+  top: 100px;
+}
+
+.title {
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-lg);
+  font-size: var(--font-size-2xl);
+  text-align: center;
+}
+
+.details {
+  margin-bottom: var(--spacing-xl);
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+  font-size: var(--font-size-base);
+}
+
+.row:last-child {
+  margin-bottom: 0;
+}
+
+.total {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-top: var(--spacing-md);
+}
+
+.freeShipping {
+  color: var(--success-color);
+  font-weight: 600;
+}
+
+.shippingMessage,
+.freeShippingMessage {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+  margin: var(--spacing-md) 0;
+}
+
+.shippingMessage {
+  background: rgba(255, 193, 7, 0.1);
+  color: #856404;
+  border: 1px solid rgba(255, 193, 7, 0.2);
+}
+
+.freeShippingMessage {
+  background: rgba(40, 167, 69, 0.1);
+  color: #155724;
+  border: 1px solid rgba(40, 167, 69, 0.2);
+}
+
+.shippingMessage i {
+  color: var(--warning-color);
+}
+
+.freeShippingMessage i {
+  color: var(--success-color);
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: var(--spacing-lg) 0;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.emptyMessage {
+  text-align: center;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin: var(--spacing-lg) 0 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .summary {
+    position: static;
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .summary {
+    padding: var(--spacing-lg);
+  }
+
+  .title {
+    font-size: var(--font-size-xl);
+  }
+}

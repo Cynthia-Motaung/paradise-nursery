@@ -1,9 +1,9 @@
 import React, { memo, useState } from 'react';
 import PropTypes from 'prop-types';
-import { useCart } from '../../context/CartContext';
-import { formatPrice } from '../../utils/helpers';
-import { SUCCESS_MESSAGES } from '../../utils/constants';
-import LoadingSpinner from '../common/LoadingSpinner/LoadingSpinner';
+import { useCart } from '../../../context/CartContext';
+import { formatPrice } from '../../../utils/helpers';
+import { SUCCESS_MESSAGES } from '../../../utils/constants';
+import LoadingSpinner from '../../common/LoadingSpinner/LoadingSpinner';
 import styles from './ProductCard.module.css';
 
 const ProductCard = memo(({ product, onAddToCart }) => {

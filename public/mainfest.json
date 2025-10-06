@@ -1,0 +1,17 @@
+{
+  "short_name": "Paradise Nursery",
+  "name": "Paradise Nursery - Houseplant Shop",
+  "description": "Your favorite online houseplant shop with beautiful plants for every home",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#2d5a27",
+  "background_color": "#f9f9f9",
+  "orientation": "portrait-primary"
+}
