@@ -3,8 +3,8 @@
 A modern, responsive React e-commerce application for buying beautiful houseplants.
 
 ### 🌐 Live Demo
-- Production: https://paradise-nursery.vercel.app
-- Staging: https://paradise-nursery-git-dev.vercel.app
+- Production: https://paradise-nursery-six-topaz.vercel.app/
+- Staging: https://github.com/Cynthia-Motaung/paradise-nursery
 
 ### 🛠️ Tech Stack
 - Frontend: React 18, React Router
@@ -12,6 +12,8 @@ A modern, responsive React e-commerce application for buying beautiful houseplan
 - Authentication: Auth0
 - Deployment: Vercel
 - State Management: React Context + useReducer
+
+
 
 ### 🚀 Quick Set up
 
@@ -25,6 +27,13 @@ A modern, responsive React e-commerce application for buying beautiful houseplan
 - Deployment Guide
 - API Documentation
 - Contributing Guide
+
+### 🤝 Contributing
+Please read the Contributing Guide before submitting pull requests.
+
+### 📄 License
+MIT License - see LICENSE file for details
+
 
 ### Installation
 ```bash
