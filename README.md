@@ -38,14 +38,14 @@ MIT License - see LICENSE file for details
 ### Installation
 ```bash
 # Clone the repository
-git clone <your-repo-url>
+git clone (https://github.com/Cynthia-Motaung/paradise-nursery)
 cd paradise-nursery
 
 # Install dependencies
 npm install
 
 # Set up environment variables
-cp .env.example .env
+cp .env
 # Edit .env with your Auth0 credentials
 
 # Start development server
