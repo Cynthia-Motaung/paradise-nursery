@@ -1,0 +1,102 @@
+/* src/components/checkout/CheckoutForm/CheckoutForm.module.css */
+.formContainer {
+  background: var(--background-primary);
+  padding: var(--spacing-xl);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.formTitle {
+  margin-bottom: var(--spacing-xl);
+  color: var(--primary-color);
+  font-size: var(--font-size-xl);
+}
+
+.formSection {
+  margin-bottom: var(--spacing-2xl);
+  padding-bottom: var(--spacing-xl);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.formSection:last-of-type {
+  border-bottom: none;
+  margin-bottom: var(--spacing-xl);
+}
+
+.sectionTitle {
+  margin-bottom: var(--spacing-lg);
+  color: var(--text-primary);
+  font-size: var(--font-size-lg);
+}
+
+.inputGroup {
+  margin-bottom: var(--spacing-md);
+}
+
+.input {
+  width: 100%;
+  padding: var(--spacing-md);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-base);
+  transition: border-color 0.3s, box-shadow 0.3s;
+  background: var(--background-secondary);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
+}
+
+.input::placeholder {
+  color: var(--text-muted);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+}
+
+.row:has(.inputGroup:nth-child(3)) {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.submitButton {
+  width: 100%;
+  padding: var(--spacing-lg);
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.submitButton:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+}
+
+.submitButton:active {
+  transform: translateY(0);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .formContainer {
+    padding: var(--spacing-lg);
+  }
+
+  .row {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+  }
+
+  .row:has(.inputGroup:nth-child(3)) {
+    grid-template-columns: 1fr;
+  }
+}

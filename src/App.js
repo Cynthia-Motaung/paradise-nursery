@@ -1,5 +1,4 @@
-
-import React, { useState, Suspense, lazy } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { Auth0Provider } from '@auth0/auth0-react';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
@@ -10,12 +9,14 @@ import Footer from './components/common/Footer/Footer';
 import { productionConfig, validateEnvironment, isProduction } from './config/production';
 import { logger } from './utils/logger';
 import './styles/globals.css';
+import { analyticsService } from './services/analyticsService';
 
 // Lazy load pages
 const Landing = lazy(() => import('./pages/Landing/Landing'));
 const Products = lazy(() => import('./pages/Products/Products'));
 const Cart = lazy(() => import('./pages/Cart/Cart'));
 const Profile = lazy(() => import('./pages/Profile/Profile'));
+const Checkout = lazy(() => import('./pages/Checkout/Checkout')); // Added missing import
 
 // Validate environment in production
 if (isProduction) {
@@ -40,6 +41,24 @@ const auth0Config = {
 function App() {
   const [currentPage, setCurrentPage] = useState('landing');
 
+  // Initialize analytics
+  useEffect(() => {
+    analyticsService.init();
+  }, []);
+
+  // Track page views
+  useEffect(() => {
+    const pageTitles = {
+      landing: 'Home - Paradise Nursery',
+      products: 'Plants - Paradise Nursery',
+      cart: 'Shopping Cart - Paradise Nursery',
+      profile: 'Profile - Paradise Nursery',
+      checkout: 'Checkout - Paradise Nursery'
+    };
+
+    analyticsService.trackPageView(currentPage, pageTitles[currentPage] || 'Paradise Nursery');
+  }, [currentPage]);
+
   const renderPage = () => {
     switch (currentPage) {
       case 'landing':
@@ -50,6 +69,8 @@ function App() {
         return <Cart onNavigate={setCurrentPage} />;
       case 'profile':
         return <Profile onNavigate={setCurrentPage} />;
+      case 'checkout': // Added missing case
+        return <Checkout onNavigate={setCurrentPage} />;
       default:
         return <Landing onNavigate={setCurrentPage} />;
     }
@@ -58,6 +79,33 @@ function App() {
   // Enhanced Auth0 configuration check
   const isAuth0Configured = productionConfig.auth0.domain && productionConfig.auth0.clientId;
 
+  // Create the main app content
+  const appContent = (
+    <div className="App">
+      {!isAuth0Configured && (
+        <div style={{ 
+          background: '#fff3cd', 
+          color: '#856404', 
+          padding: '10px', 
+          textAlign: 'center',
+          border: '1px solid #ffeaa7',
+          borderRadius: '4px',
+          margin: '10px'
+        }}>
+          ⚠️ Auth0 not configured. Please check your environment variables.
+        </div>
+      )}
+      <Header currentPage={currentPage} onNavigate={setCurrentPage} />
+      <main>
+        <Suspense fallback={<LoadingSpinner text="Loading application..." />}>
+          {renderPage()}
+        </Suspense>
+      </main>
+      <Footer />
+    </div>
+  );
+
+  // Wrap with providers based on Auth0 configuration
   if (!isAuth0Configured) {
     const errorMessage = 'Auth0 not configured. Please check your environment variables.';
     
@@ -70,26 +118,7 @@ function App() {
     return (
       <CartProvider>
         <ErrorBoundary>
-          <div className="App">
-            <div style={{ 
-              background: '#fff3cd', 
-              color: '#856404', 
-              padding: '10px', 
-              textAlign: 'center',
-              border: '1px solid #ffeaa7',
-              borderRadius: '4px',
-              margin: '10px'
-            }}>
-              ⚠️ {errorMessage}
-            </div>
-            <Header currentPage={currentPage} onNavigate={setCurrentPage} />
-            <main>
-              <Suspense fallback={<LoadingSpinner text="Loading application..." />}>
-                {renderPage()}
-              </Suspense>
-            </main>
-            <Footer />
-          </div>
+          {appContent}
         </ErrorBoundary>
       </CartProvider>
     );
@@ -100,15 +129,7 @@ function App() {
       <AuthProvider>
         <CartProvider>
           <ErrorBoundary>
-            <div className="App">
-              <Header currentPage={currentPage} onNavigate={setCurrentPage} />
-              <main>
-                <Suspense fallback={<LoadingSpinner text="Loading application..." />}>
-                  {renderPage()}
-                </Suspense>
-              </main>
-              <Footer />
-            </div>
+            {appContent}
           </ErrorBoundary>
         </CartProvider>
       </AuthProvider>
