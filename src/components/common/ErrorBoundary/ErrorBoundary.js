@@ -1,6 +1,8 @@
+
 import React from 'react';
 import PropTypes from 'prop-types';
 import styles from './ErrorBoundary.module.css';
+import { errorBoundaryLogger } from '../../../utils/logger';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -18,16 +20,33 @@ class ErrorBoundary extends React.Component {
       errorInfo: errorInfo
     });
     
-    // Log error to monitoring service
-    console.error('Error caught by boundary:', error, errorInfo);
+    // Log error with context
+    errorBoundaryLogger.error('Error caught by boundary', error, {
+      componentStack: errorInfo.componentStack,
+      timestamp: new Date().toISOString()
+    });
   }
 
   handleReset = () => {
+    errorBoundaryLogger.info('Error boundary reset by user');
     this.setState({ hasError: false, error: null, errorInfo: null });
   };
 
   handleReload = () => {
+    errorBoundaryLogger.info('Page reload initiated from error boundary');
     window.location.reload();
+  };
+
+  handleReport = () => {
+    const { error, errorInfo } = this.state;
+    
+    errorBoundaryLogger.info('Error reported by user', null, {
+      error: error?.toString(),
+      componentStack: errorInfo?.componentStack
+    });
+
+    // TODO: Send error report to backend
+    alert('Thank you for reporting the issue! We will look into it.');
   };
 
   render() {
@@ -57,6 +76,12 @@ class ErrorBoundary extends React.Component {
                 onClick={this.handleReset}
               >
                 Try Again
+              </button>
+              <button 
+                className="btn btn--secondary" 
+                onClick={this.handleReport}
+              >
+                Report Issue
               </button>
               <button 
                 className="btn" 

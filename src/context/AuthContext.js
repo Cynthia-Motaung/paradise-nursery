@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import PropTypes from 'prop-types';
@@ -66,17 +67,24 @@ export const AuthProvider = ({ children }) => {
   };
 
   const handleLogout = () => {
-  localStorage.clear();
-  
-  // REPLACE THIS WITH YOUR ACTUAL VERCEL URL
-  const vercelUrl = 'https://paradise-nursery-six-topaz.vercel.app/';
-  
-  logout({
-    logoutParams: {
-      returnTo: vercelUrl
+    // Clear all user-related data
+    if (user) {
+      localStorage.removeItem(`user_profile_${user.sub}`);
+      localStorage.removeItem(`user_prefs_${user.sub}`);
     }
-  });
-};
+    
+    // Clear cart and other app data
+    localStorage.removeItem('paradise_nursery_cart');
+    
+    // Dynamic logout URL
+    const logoutUrl = process.env.REACT_APP_LOGOUT_REDIRECT_URI || window.location.origin;
+    
+    logout({
+      logoutParams: {
+        returnTo: logoutUrl
+      }
+    });
+  };
 
   const value = {
     user,
@@ -85,7 +93,7 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated,
     isLoading,
     login: loginWithRedirect,
-    logout: () => logout({ returnTo: window.location.origin }),
+    logout: handleLogout,
     updateProfile,
     updatePreferences,
     getAuthToken

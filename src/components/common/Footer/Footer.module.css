@@ -174,3 +174,43 @@
     min-width: auto;
   }
 }
+
+.inputGroup {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+}
+
+.inputError {
+  border-color: var(--error-color) !important;
+  background-color: rgba(220, 53, 69, 0.05);
+}
+
+.errorMessage {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  font-size: var(--font-size-xs);
+  color: var(--error-color);
+  margin-top: var(--spacing-xs);
+  padding: var(--spacing-xs);
+  background: rgba(220, 53, 69, 0.1);
+  border-radius: var(--border-radius-sm);
+}
+
+.successMessage {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  background: rgba(40, 167, 69, 0.1);
+  color: var(--success-color);
+  border-radius: var(--border-radius-md);
+  border: 1px solid rgba(40, 167, 69, 0.2);
+  font-weight: 500;
+}
+
+.successMessage i {
+  font-size: var(--font-size-lg);
+}

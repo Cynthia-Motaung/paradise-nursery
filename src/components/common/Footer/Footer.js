@@ -1,69 +1,109 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './Footer.module.css';
+import { ValidationSchemas, validateForm } from '../../../utils/validators';
+import { withErrorHandling } from '../../../utils/errorHandler';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const [email, setEmail] = useState('');
+  const [validationError, setValidationError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [subscribed, setSubscribed] = useState(false);
+
+  const handleNewsletterSubmit = withErrorHandling(async (e) => {
+    e.preventDefault();
+    
+    // Validate email
+    const validation = validateForm({ email }, ValidationSchemas.newsletter);
+    
+    if (!validation.isValid) {
+      setValidationError(validation.errors.email);
+      return;
+    }
+
+    setValidationError('');
+    setIsSubmitting(true);
+
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // TODO: Integrate with actual newsletter API
+      console.log('Subscribing email:', email);
+      
+      setSubscribed(true);
+      setEmail('');
+      
+      // Reset success message after 3 seconds
+      setTimeout(() => setSubscribed(false), 3000);
+    } catch (error) {
+      setValidationError('Failed to subscribe. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, { operation: 'newsletterSubscription' });
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+    // Clear validation error when user starts typing
+    if (validationError) {
+      setValidationError('');
+    }
+  };
 
   return (
     <footer className={styles.footer} role="contentinfo">
       <div className="container">
         <div className={styles.footerContent}>
-          <div className={styles.brand}>
-            <div className={styles.logo}>
-              <i className="fas fa-leaf" aria-hidden="true"></i>
-              <span>Paradise Nursery</span>
-            </div>
-            <p className={styles.tagline}>
-              Bringing nature's beauty into your home
-            </p>
-          </div>
-
-          <div className={styles.links}>
-            <div className={styles.linkGroup}>
-              <h4>Shop</h4>
-              <ul>
-                <li><a href="#all-plants">All Plants</a></li>
-                <li><a href="#succulents">Succulents</a></li>
-                <li><a href="#tropical">Tropical Plants</a></li>
-                <li><a href="#flowering">Flowering Plants</a></li>
-              </ul>
-            </div>
-
-            <div className={styles.linkGroup}>
-              <h4>Support</h4>
-              <ul>
-                <li><a href="#contact">Contact Us</a></li>
-                <li><a href="#shipping">Shipping Info</a></li>
-                <li><a href="#returns">Returns</a></li>
-                <li><a href="#care">Plant Care</a></li>
-              </ul>
-            </div>
-
-            <div className={styles.linkGroup}>
-              <h4>Company</h4>
-              <ul>
-                <li><a href="#about">About Us</a></li>
-                <li><a href="#sustainability">Sustainability</a></li>
-                <li><a href="#careers">Careers</a></li>
-                <li><a href="#press">Press</a></li>
-              </ul>
-            </div>
-          </div>
+          {/* ... existing brand and links ... */}
 
           <div className={styles.newsletter}>
             <h4>Stay Updated</h4>
             <p>Get plant care tips and exclusive offers</p>
-            <form className={styles.newsletterForm}>
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className={styles.newsletterInput}
-                aria-label="Email for newsletter"
-              />
-              <button type="submit" className="btn btn--sm">
-                Subscribe
-              </button>
-            </form>
+            
+            {subscribed ? (
+              <div className={styles.successMessage}>
+                <i className="fas fa-check-circle"></i>
+                Thank you for subscribing!
+              </div>
+            ) : (
+              <form className={styles.newsletterForm} onSubmit={handleNewsletterSubmit} noValidate>
+                <div className={styles.inputGroup}>
+                  <input
+                    type="email"
+                    placeholder="Enter your email"
+                    className={`${styles.newsletterInput} ${
+                      validationError ? styles.inputError : ''
+                    }`}
+                    value={email}
+                    onChange={handleEmailChange}
+                    disabled={isSubmitting}
+                    aria-label="Email for newsletter"
+                    aria-describedby={validationError ? "email-error" : undefined}
+                    required
+                  />
+                  {validationError && (
+                    <div id="email-error" className={styles.errorMessage}>
+                      {validationError}
+                    </div>
+                  )}
+                </div>
+                <button 
+                  type="submit" 
+                  className="btn btn--sm"
+                  disabled={isSubmitting || !email}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <i className="fas fa-spinner fa-spin"></i>
+                      Subscribing...
+                    </>
+                  ) : (
+                    'Subscribe'
+                  )}
+                </button>
+              </form>
+            )}
           </div>
         </div>
 

@@ -1,93 +1,138 @@
-export const validators = {
-  email: (email) => {
+import { createError, ErrorCodes } from './errorHandler';
+
+export const ValidationRules = {
+  required: (value) => ({
+    isValid: value !== null && value !== undefined && value.toString().trim() !== '',
+    message: 'This field is required'
+  }),
+
+  email: (value) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+    return {
+      isValid: emailRegex.test(value),
+      message: 'Please enter a valid email address'
+    };
   },
 
-  phone: (phone) => {
+  phone: (value) => {
     const phoneRegex = /^\+?[\d\s-()]{10,}$/;
-    return phoneRegex.test(phone);
+    return {
+      isValid: phoneRegex.test(value),
+      message: 'Please enter a valid phone number'
+    };
   },
 
-  zipCode: (zipCode) => {
-    const zipRegex = /^\d{5}(-\d{4})?$/;
-    return zipRegex.test(zipCode);
-  },
+  minLength: (min) => (value) => ({
+    isValid: value.length >= min,
+    message: `Must be at least ${min} characters`
+  }),
 
-  required: (value) => {
-    return value !== null && value !== undefined && value.toString().trim() !== '';
-  },
+  maxLength: (max) => (value) => ({
+    isValid: value.length <= max,
+    message: `Must be no more than ${max} characters`
+  }),
 
-  minLength: (value, min) => {
-    return value.length >= min;
-  },
+  number: (value) => ({
+    isValid: !isNaN(parseFloat(value)) && isFinite(value),
+    message: 'Must be a valid number'
+  }),
 
-  maxLength: (value, max) => {
-    return value.length <= max;
-  },
+  positiveNumber: (value) => ({
+    isValid: !isNaN(parseFloat(value)) && parseFloat(value) > 0,
+    message: 'Must be a positive number'
+  }),
 
-  number: (value) => {
-    return !isNaN(parseFloat(value)) && isFinite(value);
-  },
+  price: (value) => ({
+    isValid: !isNaN(parseFloat(value)) && parseFloat(value) >= 0,
+    message: 'Must be a valid price'
+  }),
 
-  positiveNumber: (value) => {
-    return validators.number(value) && parseFloat(value) > 0;
+  url: (value) => {
+    try {
+      new URL(value);
+      return { isValid: true, message: '' };
+    } catch {
+      return { isValid: false, message: 'Must be a valid URL' };
+    }
   }
 };
 
-export const validateForm = (formData, rules) => {
+export const validateField = (value, rules) => {
+  if (!Array.isArray(rules)) {
+    rules = [rules];
+  }
+
+  for (const rule of rules) {
+    const result = typeof rule === 'function' ? rule(value) : rule;
+    if (!result.isValid) {
+      return result;
+    }
+  }
+
+  return { isValid: true, message: '' };
+};
+
+export const validateForm = (formData, schema) => {
   const errors = {};
+  let isValid = true;
 
-  Object.keys(rules).forEach(field => {
+  Object.keys(schema).forEach(field => {
     const value = formData[field];
-    const fieldRules = rules[field];
-
-    for (const rule of fieldRules) {
-      if (rule === 'required' && !validators.required(value)) {
-        errors[field] = 'This field is required';
-        break;
-      }
-
-      if (rule.startsWith('minLength:')) {
-        const min = parseInt(rule.split(':')[1]);
-        if (!validators.minLength(value, min)) {
-          errors[field] = `Must be at least ${min} characters`;
-          break;
-        }
-      }
-
-      if (rule.startsWith('maxLength:')) {
-        const max = parseInt(rule.split(':')[1]);
-        if (!validators.maxLength(value, max)) {
-          errors[field] = `Must be no more than ${max} characters`;
-          break;
-        }
-      }
-
-      if (rule === 'email' && !validators.email(value)) {
-        errors[field] = 'Please enter a valid email address';
-        break;
-      }
-
-      if (rule === 'phone' && !validators.phone(value)) {
-        errors[field] = 'Please enter a valid phone number';
-        break;
-      }
-
-      if (rule === 'zipCode' && !validators.zipCode(value)) {
-        errors[field] = 'Please enter a valid ZIP code';
-        break;
-      }
-
-      if (rule === 'positiveNumber' && !validators.positiveNumber(value)) {
-        errors[field] = 'Please enter a positive number';
-        break;
-      }
+    const fieldRules = schema[field];
+    
+    const result = validateField(value, fieldRules);
+    
+    if (!result.isValid) {
+      errors[field] = result.message;
+      isValid = false;
     }
   });
 
   return {
-    isValid: Object.keys(errors).length === 0,
-    errors
+    isValid,
+    errors,
+    hasErrors: !isValid
   };
+};
+
+export const createValidator = (schema) => {
+  return (formData) => validateForm(formData, schema);
+};
+
+// Common validation schemas
+export const ValidationSchemas = {
+  newsletter: {
+    email: [ValidationRules.required, ValidationRules.email]
+  },
+
+  profile: {
+    name: [ValidationRules.required, ValidationRules.minLength(2)],
+    email: [ValidationRules.required, ValidationRules.email],
+    phone: [ValidationRules.phone]
+  },
+
+  product: {
+    name: [ValidationRules.required, ValidationRules.minLength(2)],
+    price: [ValidationRules.required, ValidationRules.price],
+    description: [ValidationRules.required, ValidationRules.minLength(10)]
+  }
+};
+
+export class ValidationError extends Error {
+  constructor(errors, message = 'Validation failed') {
+    super(message);
+    this.name = 'ValidationError';
+    this.errors = errors;
+    this.timestamp = new Date().toISOString();
+  }
+}
+
+export const withValidation = (schema, formData) => {
+  const result = validateForm(formData, schema);
+  
+  if (!result.isValid) {
+    throw new ValidationError(result.errors);
+  }
+  
+  return formData;
 };
